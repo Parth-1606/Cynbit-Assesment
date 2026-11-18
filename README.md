@@ -322,6 +322,7 @@ powershell -ExecutionPolicy Bypass -File scripts\api-smoke-test.ps1
 | API smoke suite vs. live MongoDB 7 | ✅ **13/13** |
 | CORS (allowed / disallowed / preflight) | ✅ 200 + header / 403 / 204 |
 | Browser end-to-end walkthrough | ✅ full flow, validation, copy, download, backend-down, restart — zero console errors |
+| Lighthouse (production build) | ✅ Accessibility **100** · Best Practices **100** · SEO **100** (0 failures) |
 
 The smoke suite covers: health, four validation failures, a successful create, 401 on missing
 and incorrect admin tokens, 200 with all schema fields present, limit fallback, 404, and

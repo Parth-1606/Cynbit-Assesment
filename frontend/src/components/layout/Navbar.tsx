@@ -46,9 +46,14 @@ export function Navbar() {
         className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
         aria-label="Main navigation"
       >
-        {/* Brand */}
-        <a href="#top" className="group flex items-center gap-2.5" aria-label="Cynbit home">
-          <span className="relative flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent-blue to-accent-purple font-display text-lg font-extrabold text-white shadow-lg shadow-accent-indigo/30 transition-transform duration-300 group-hover:scale-105">
+        {/* Brand — no aria-label: the accessible name must contain the visible
+            text ("C Cynbit Technologies") or assistive tech announces a label
+            that differs from what sighted users read. */}
+        <a href="#top" className="group flex items-center gap-2.5">
+          <span
+            aria-hidden="true"
+            className="relative flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent-blue to-accent-purple font-display text-lg font-extrabold text-white shadow-lg shadow-accent-indigo/30 transition-transform duration-300 group-hover:scale-105"
+          >
             C
           </span>
           <span className="flex flex-col leading-none">

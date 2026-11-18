@@ -31,8 +31,13 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand column */}
           <div className="lg:col-span-2">
-            <a href="#top" className="flex items-center gap-2.5" aria-label="Cynbit home">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent-blue to-accent-purple font-display text-lg font-extrabold text-white">
+            {/* Brand — no aria-label, so the accessible name matches the
+                visible text and screen readers announce a consistent label. */}
+            <a href="#top" className="flex items-center gap-2.5">
+              <span
+                aria-hidden="true"
+                className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent-blue to-accent-purple font-display text-lg font-extrabold text-white"
+              >
                 C
               </span>
               <span className="flex flex-col leading-none">

@@ -443,8 +443,8 @@ and nowhere in the UI is the feature described as AI-powered.
 
 ## 11. Testing Approach
 
-Four layers, all executed for this assessment. **Results below are actual outputs** from this
-project's environment; nothing is projected or estimated.
+Layers of testing, all executed for this assessment. **Results below are actual outputs** from
+this project's environment; nothing is projected or estimated.
 
 ### 11.1 Backend unit/API tests — **12/12 passing** (vitest + supertest)
 
@@ -542,7 +542,30 @@ Test Files  2 passed (2)
 - Production builds succeed: frontend **287.6 kB JS / 50.0 kB CSS** (88.4 kB gzip JS),
   backend compiles to `dist/index.js`.
 
-### 11.6 Known limitations of this testing
+### 11.6 Lighthouse audit (production build)
+
+Run against the built artefact served by `vite preview` (not the dev server):
+
+| Category | Score |
+| --- | --- |
+| Accessibility | **100** |
+| Best Practices | **100** |
+| SEO | **100** |
+
+The first run scored SEO 80 and flagged two accessibility/quality issues, both of which were
+fixed and re-verified:
+
+1. **`label-content-name-mismatch`** — the navbar and footer brand links carried
+   `aria-label="Cynbit home"` while their visible text read *"C Cynbit Technologies"*, so the
+   announced name differed from what sighted users see (WCAG 2.5.3 *Label in Name*). Fixed by
+   removing the overriding `aria-label` and hiding the decorative logo glyph from assistive
+   tech, so the accessible name equals the visible text.
+2. **`robots.txt` missing** — added `frontend/public/robots.txt` allowing crawling of the page
+   while disallowing `/api/`.
+
+Re-running the audit after both fixes produced **0 failures** across all three categories.
+
+### 11.7 Known limitations of this testing
 
 - Visual/screenshot review was not possible in this environment (the browser window was not
   visible to the automation layer), so layout QA relied on the accessibility tree and DOM
@@ -550,7 +573,8 @@ Test Files  2 passed (2)
 - Mobile navigation was verified structurally (hamburger control, `#mobile-menu` with 5 links,
   desktop nav hidden below `md`) but not through viewport emulation, which the tooling does not
   provide.
-- The Lighthouse audit was not run; no performance/accessibility *score* is claimed.
+- Lighthouse was run on the desktop profile only; no mobile-emulated Lighthouse run and no
+  visual regression suite are claimed.
 
 ---
 

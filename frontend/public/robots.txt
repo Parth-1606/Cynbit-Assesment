@@ -1,0 +1,6 @@
+# Cynbit Project Discovery Assistant
+User-agent: *
+Allow: /
+
+# The assistant is a client-side flow; no crawlable sub-pages exist yet.
+Disallow: /api/
