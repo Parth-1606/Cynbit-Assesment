@@ -1,10 +1,22 @@
 # End-to-end API smoke test for the Cynbit Discovery API.
 # Pure ASCII on purpose: PowerShell 5.1 reads .ps1 files as ANSI when there is
 # no BOM, so the rupee sign and en dash are built at runtime instead.
-# Usage: powershell -ExecutionPolicy Bypass -File scripts\api-smoke-test.ps1
+#
+# Usage:
+#   powershell -ExecutionPolicy Bypass -File scripts\api-smoke-test.ps1
+#
+# Configuration (environment variables, all optional):
+#   SMOKE_BASE_URL       API base URL        (default http://localhost:5000)
+#   ADMIN_API_TOKEN      admin bearer token  (default: local dev token)
 $ErrorActionPreference = 'Continue'
 $base = 'http://localhost:5000'
+if ($env:SMOKE_BASE_URL) { $base = $env:SMOKE_BASE_URL.TrimEnd('/') }
+
+# Must match the ADMIN_API_TOKEN the API was started with. Override via the
+# environment rather than editing this file; no production secret lives here.
 $token = 'super-secret-admin-token-123'
+if ($env:ADMIN_API_TOKEN) { $token = $env:ADMIN_API_TOKEN }
+
 $script:pass = 0
 $script:fail = 0
 
