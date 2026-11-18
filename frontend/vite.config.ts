@@ -18,6 +18,14 @@ export default defineConfig({
   },
   preview: {
     port: 4173,
+    // Same proxy as dev so `npm run preview` can reach the local API too.
+    // In production the SPA uses VITE_API_BASE_URL instead.
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+    },
   },
   test: {
     environment: 'node',
