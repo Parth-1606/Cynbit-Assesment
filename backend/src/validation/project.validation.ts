@@ -1,20 +1,34 @@
 /**
  * Request validation for POST /api/projects using express-validator.
- * Chains are exported separately from the route so they can be reused in tests.
  */
 import { body, type ValidationChain } from 'express-validator';
 import {
   BUDGET_OPTIONS,
-  GOAL_OPTIONS,
-  SOLUTION_OPTIONS,
+  BUSINESS_OBJECTIVES,
   TIMELINE_OPTIONS,
 } from '../constants/questionnaire';
 
 export const createProjectRules: ValidationChain[] = [
-  body('name')
+  body('customerName')
+    .optional()
     .trim()
-    .notEmpty().withMessage('Full name is required')
-    .isLength({ min: 2, max: 100 }).withMessage('Name must be between 2 and 100 characters'),
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Customer name must be between 2 and 100 characters'),
+
+  body('name')
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Name must be between 2 and 100 characters'),
+
+  body().custom((_value, { req }) => {
+    const hasName = (req.body.customerName && req.body.customerName.trim().length >= 2) ||
+      (req.body.name && req.body.name.trim().length >= 2);
+    if (!hasName) {
+      throw new Error('Full name is required (at least 2 characters)');
+    }
+    return true;
+  }),
 
   body('email')
     .trim()
@@ -28,15 +42,13 @@ export const createProjectRules: ValidationChain[] = [
     .trim()
     .isLength({ max: 150 }).withMessage('Company name must be 150 characters or fewer'),
 
-  body('goal')
-    .trim()
-    .notEmpty().withMessage('Business goal is required')
-    .isIn(GOAL_OPTIONS as readonly string[]).withMessage('Unknown business goal'),
-
-  body('solution')
-    .trim()
-    .notEmpty().withMessage('Solution type is required')
-    .isIn(SOLUTION_OPTIONS as readonly string[]).withMessage('Unknown solution type'),
+  body().custom((_value, { req }) => {
+    const objective = req.body.businessObjective || req.body.goal;
+    if (!objective || !BUSINESS_OBJECTIVES.includes(objective)) {
+      throw new Error('Valid business objective is required');
+    }
+    return true;
+  }),
 
   body('budget')
     .trim()
@@ -48,14 +60,14 @@ export const createProjectRules: ValidationChain[] = [
     .notEmpty().withMessage('Timeline is required')
     .isIn(TIMELINE_OPTIONS as readonly string[]).withMessage('Unknown timeline'),
 
-  body('description')
-    .trim()
-    .notEmpty().withMessage('Project description is required')
-    .isLength({ min: 20, max: 2000 })
-    .withMessage('Description must be between 20 and 2000 characters'),
-
-  body('recommendation')
-    .trim()
-    .notEmpty().withMessage('Recommendation is required')
-    .isLength({ max: 300 }).withMessage('Recommendation must be 300 characters or fewer'),
+  body().custom((_value, { req }) => {
+    const desc = req.body.projectDescription || req.body.description;
+    if (!desc || desc.trim().length < 20) {
+      throw new Error('Project description must be at least 20 characters');
+    }
+    if (desc.trim().length > 3000) {
+      throw new Error('Project description cannot exceed 3000 characters');
+    }
+    return true;
+  }),
 ];

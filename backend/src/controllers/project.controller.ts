@@ -1,21 +1,30 @@
 /**
- * Project inquiry handlers.
+ * Project inquiry handlers for Cynbit Smart Discovery & Cost Estimator.
  */
 import type { Request, Response, NextFunction } from 'express';
 import { Project, type ProjectDocument } from '../models/Project';
 import { getDatabaseState } from '../config/db';
+import { EstimationService } from '../services/estimation.service';
+import type { BusinessObjective, BudgetOption, TimelineOption } from '../constants/questionnaire';
+import type { DynamicRequirements } from '../utils/estimationRules';
 
-/** Body shape after express-validator has run. */
 interface CreateProjectBody {
-  name: string;
+  customerName?: string;
+  name?: string;
   email: string;
   company?: string;
-  goal: string;
-  solution: string;
-  budget: string;
-  timeline: string;
-  description: string;
-  recommendation: string;
+  businessObjective?: BusinessObjective;
+  goal?: BusinessObjective;
+  projectType?: string;
+  solution?: string;
+  selectedRequirements?: DynamicRequirements;
+  budget: BudgetOption;
+  timeline: TimelineOption;
+  projectDescription?: string;
+  description?: string;
+  recommendation?: string;
+  estimatedBudget?: string;
+  estimatedDuration?: string;
 }
 
 /** Guards writes when the database is unavailable so we return 503, not a timeout. */
@@ -30,29 +39,66 @@ function ensureDatabase(res: Response): boolean {
   return true;
 }
 
-/** POST /api/projects - stores a new inquiry and returns the created record. */
+/** POST /api/projects - stores a new inquiry and returns the created record with verified estimates. */
 export async function createProject(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     if (!ensureDatabase(res)) return;
 
     const body = req.body as CreateProjectBody;
+    const customerName = (body.customerName || body.name || '').trim();
+    const email = body.email.trim().toLowerCase();
+    const company = (body.company || '').trim();
+    const businessObjective = (body.businessObjective || body.goal) as BusinessObjective;
+    const selectedRequirements = body.selectedRequirements || {};
+    const budget = body.budget;
+    const timeline = body.timeline;
+    const projectDescription = (body.projectDescription || body.description || '').trim();
+
+    // Verify or calculate deterministic estimates on the server
+    const serverEstimate = EstimationService.calculate(
+      businessObjective,
+      selectedRequirements,
+      budget,
+      timeline,
+    );
+
+    const recommendation = body.recommendation?.trim() || serverEstimate.recommendedService;
+    const projectType = body.projectType?.trim() || body.solution?.trim() || serverEstimate.recommendedService;
+    const estimatedBudget = body.estimatedBudget?.trim() || serverEstimate.estimatedBudget;
+    const estimatedDuration = body.estimatedDuration?.trim() || serverEstimate.estimatedDuration;
 
     const project = await Project.create({
-      name: body.name,
-      email: body.email,
-      company: body.company?.trim() ?? '',
-      goal: body.goal,
-      solution: body.solution,
-      budget: body.budget,
-      timeline: body.timeline,
-      description: body.description,
-      recommendation: body.recommendation,
+      customerName,
+      name: customerName,
+      email,
+      company,
+      businessObjective,
+      goal: businessObjective,
+      projectType,
+      solution: projectType,
+      selectedRequirements,
+      budget,
+      timeline,
+      projectDescription,
+      description: projectDescription,
+      recommendation,
+      estimatedBudget,
+      estimatedDuration,
     });
 
     res.status(201).json({
       success: true,
       message: 'Project inquiry received successfully.',
       data: serialize(project),
+      estimates: {
+        recommendedService: serverEstimate.recommendedService,
+        whyRecommended: serverEstimate.whyRecommended,
+        projectComplexity: serverEstimate.projectComplexity,
+        estimatedBudget: serverEstimate.estimatedBudget,
+        estimatedDuration: serverEstimate.estimatedDuration,
+        budgetConflictNote: serverEstimate.budgetConflictNote,
+        recommendedNextSteps: serverEstimate.recommendedNextSteps,
+      },
     });
   } catch (error) {
     next(error);
@@ -91,22 +137,47 @@ type PopulatedProject = ProjectDocument & { _id?: unknown };
 function serialize(project: PopulatedProject): Record<string, unknown> {
   return {
     id: String(project._id),
-    name: project.name,
+    customerName: project.customerName || project.name,
+    name: project.name || project.customerName,
     email: project.email,
     company: project.company,
-    goal: project.goal,
-    solution: project.solution,
+    businessObjective: project.businessObjective || project.goal,
+    goal: project.goal || project.businessObjective,
+    projectType: project.projectType || project.solution,
+    solution: project.solution || project.projectType,
+    selectedRequirements: project.selectedRequirements,
     budget: project.budget,
     timeline: project.timeline,
-    description: project.description,
+    projectDescription: project.projectDescription || project.description,
+    description: project.description || project.projectDescription,
     recommendation: project.recommendation,
-    createdAt: project.createdAt,
+    estimatedBudget: project.estimatedBudget,
+    estimatedDuration: project.estimatedDuration,
+    createdDate: project.createdDate || project.createdAt,
+    createdAt: project.createdAt || project.createdDate,
   };
 }
 
-function serializeLean(project: Record<string, unknown>): Record<string, unknown> {
-  const { _id, ...rest } = project;
-  return { id: _id, ...rest };
+function serializeLean(raw: Record<string, unknown>): Record<string, unknown> {
+  return {
+    id: String(raw._id),
+    customerName: raw.customerName || raw.name,
+    name: raw.name || raw.customerName,
+    email: raw.email,
+    company: raw.company,
+    businessObjective: raw.businessObjective || raw.goal,
+    goal: raw.goal || raw.businessObjective,
+    projectType: raw.projectType || raw.solution,
+    solution: raw.solution || raw.projectType,
+    selectedRequirements: raw.selectedRequirements,
+    budget: raw.budget,
+    timeline: raw.timeline,
+    projectDescription: raw.projectDescription || raw.description,
+    description: raw.description || raw.projectDescription,
+    recommendation: raw.recommendation,
+    estimatedBudget: raw.estimatedBudget,
+    estimatedDuration: raw.estimatedDuration,
+    createdDate: raw.createdDate || raw.createdAt,
+    createdAt: raw.createdAt || raw.createdDate,
+  };
 }
-
-// `lean()` returns plain objects, so the helper above accepts a loose shape.

@@ -1,28 +1,18 @@
 /**
- * Questionnaire option labels, mirrored from `frontend/src/data/questions.ts`.
- *
- * The API validates incoming inquiries against these lists so that only
- * values the UI can actually produce are persisted. If an option is added or
- * renamed in the frontend, update this file as well.
+ * Questionnaire option labels for Cynbit Smart Project Discovery & Cost Estimator.
  */
 
-export const GOAL_OPTIONS = [
-  'Build a new digital product',
+export const BUSINESS_OBJECTIVES = [
+  'Build a website',
+  'Develop a web application',
+  'Develop a mobile application',
   'Automate business operations',
-  'Improve an existing website',
-  'Improve online presence',
-  'Modernize existing infrastructure',
+  'Implement AI solutions',
+  'Improve cloud infrastructure',
+  'Improve digital marketing',
 ] as const;
 
-export const SOLUTION_OPTIONS = [
-  'Website / Web Application',
-  'Mobile Application',
-  'AI Automation',
-  'Cloud Infrastructure',
-  'Digital Marketing',
-  'Custom Software Development',
-  'Not sure yet',
-] as const;
+export type BusinessObjective = (typeof BUSINESS_OBJECTIVES)[number];
 
 export const BUDGET_OPTIONS = [
   'Below ₹25,000',
@@ -33,10 +23,24 @@ export const BUDGET_OPTIONS = [
   'Not decided',
 ] as const;
 
+export type BudgetOption = (typeof BUDGET_OPTIONS)[number];
+
 export const TIMELINE_OPTIONS = [
-  'Within 2 weeks',
+  '1–2 weeks',
   'Within 1 month',
   '1–3 months',
   '3–6 months',
   'Flexible',
 ] as const;
+
+export type TimelineOption = (typeof TIMELINE_OPTIONS)[number];
+
+export const SERVICE_RECOMMENDATIONS: Record<BusinessObjective, string> = {
+  'Build a website': 'Web Development',
+  'Develop a web application': 'Full Stack Development',
+  'Develop a mobile application': 'Mobile App Development',
+  'Automate business operations': 'AI Automation',
+  'Implement AI solutions': 'AI Development',
+  'Improve cloud infrastructure': 'Cloud Solutions',
+  'Improve digital marketing': 'Digital Marketing',
+};

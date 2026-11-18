@@ -83,7 +83,7 @@ export function buildProjectBrief(
     '-'.repeat(78),
     '5. PROJECT DESCRIPTION',
     '-'.repeat(78),
-    formatDescription(contact.description),
+    formatDescription(contact.description || contact.projectDescription || ''),
     '',
     '-'.repeat(78),
     '6. RECOMMENDED SOLUTION',

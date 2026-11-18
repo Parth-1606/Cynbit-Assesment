@@ -120,14 +120,14 @@ export function DiscoveryAssistant() {
     });
 
     const payload: ProjectInquiryPayload = {
-      name: answers.contact.name.trim(),
+      name: (answers.contact.name || answers.contact.fullName || '').trim(),
       email: answers.contact.email.trim(),
-      company: answers.contact.company.trim(),
+      company: (answers.contact.company || '').trim(),
       goal: answers.goal,
       solution: answers.solution,
       budget: answers.budget,
       timeline: answers.timeline,
-      description: answers.contact.description.trim(),
+      description: (answers.contact.description || answers.contact.projectDescription || '').trim(),
       recommendation: result.primary.name,
     };
 

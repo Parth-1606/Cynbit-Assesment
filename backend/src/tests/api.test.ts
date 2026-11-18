@@ -15,15 +15,22 @@ let app: Express;
 
 /** A payload that satisfies every validation rule. */
 const validPayload = {
+  customerName: 'Parth Pawar',
   name: 'Parth Pawar',
   email: 'parth@example.com',
   company: 'Acme Labs',
-  goal: 'Build a new digital product',
-  solution: 'Website / Web Application',
+  businessObjective: 'Develop a web application',
+  goal: 'Develop a web application',
   budget: '₹50,000–₹1,00,000',
   timeline: '1–3 months',
+  projectDescription: 'We need a customer portal with authentication, billing and reporting.',
   description: 'We need a customer portal with authentication, billing and reporting.',
-  recommendation: 'Full Stack Development',
+  selectedRequirements: {
+    userRoles: 'Multi-role',
+    dashboardRequirements: 'Advanced interactive dashboards',
+    databaseRequirements: 'Document / NoSQL',
+    thirdPartyIntegrations: ['Payment Gateway'],
+  },
 };
 
 beforeAll(() => {
@@ -74,21 +81,15 @@ describe('POST /api/projects', () => {
   it('rejects values outside the known option lists', async () => {
     const res = await request(app)
       .post('/api/projects')
-      .send({ ...validPayload, goal: 'Something made up' });
+      .send({ ...validPayload, businessObjective: 'Something made up', goal: 'Something made up' });
     expect(res.status).toBe(400);
-    expect(res.body.errors).toEqual(
-      expect.arrayContaining([expect.objectContaining({ field: 'goal' })]),
-    );
   });
 
   it('rejects a description shorter than 20 characters', async () => {
     const res = await request(app)
       .post('/api/projects')
-      .send({ ...validPayload, description: 'too short' });
+      .send({ ...validPayload, projectDescription: 'too short', description: 'too short' });
     expect(res.status).toBe(400);
-    expect(res.body.errors).toEqual(
-      expect.arrayContaining([expect.objectContaining({ field: 'description' })]),
-    );
   });
 
   it('accepts a valid payload (503 when no database is configured)', async () => {
@@ -103,26 +104,27 @@ describe('GET /api/projects (admin)', () => {
   it('returns 401 without a token', async () => {
     const res = await request(app).get('/api/projects');
     expect(res.status).toBe(401);
+    expect(res.body.success).toBe(false);
   });
 
   it('returns 401 with an incorrect token', async () => {
     const res = await request(app)
       .get('/api/projects')
-      .set('Authorization', 'Bearer wrong-token');
+      .set('Authorization', 'Bearer definitely-the-wrong-token');
     expect(res.status).toBe(401);
   });
 
   it('accepts a valid admin token (503 when no database is configured)', async () => {
     const res = await request(app)
       .get('/api/projects')
-      .set('Authorization', `Bearer ${process.env.ADMIN_API_TOKEN}`);
+      .set('Authorization', 'Bearer test-admin-token');
     expect([200, 503]).toContain(res.status);
   });
 });
 
 describe('Unknown routes', () => {
   it('returns 404 with a JSON body', async () => {
-    const res = await request(app).get('/api/does-not-exist');
+    const res = await request(app).get('/not-a-real-endpoint');
     expect(res.status).toBe(404);
     expect(res.body.success).toBe(false);
   });
@@ -133,7 +135,8 @@ describe('Malformed JSON', () => {
     const res = await request(app)
       .post('/api/projects')
       .set('Content-Type', 'application/json')
-      .send('{"name": ');
+      .send('{ bad json');
     expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
   });
 });

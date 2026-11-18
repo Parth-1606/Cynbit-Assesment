@@ -14,7 +14,8 @@ interface ContactStepProps {
 }
 
 export function ContactStep({ contact, errors, disabled, onChange }: ContactStepProps) {
-  const remaining = DESCRIPTION_MAX_LENGTH - contact.description.length;
+  const desc = contact.description ?? contact.projectDescription ?? '';
+  const remaining = DESCRIPTION_MAX_LENGTH - desc.length;
 
   return (
     <div className="grid gap-4">
@@ -24,10 +25,10 @@ export function ContactStep({ contact, errors, disabled, onChange }: ContactStep
         type="text"
         autoComplete="name"
         placeholder="Ada Sharma"
-        value={contact.name}
-        error={errors.name}
+        value={contact.name ?? contact.fullName ?? ''}
+        error={errors.name ?? errors.fullName}
         disabled={disabled}
-        onChange={(event) => onChange({ name: event.target.value })}
+        onChange={(event) => onChange({ name: event.target.value, fullName: event.target.value })}
       />
 
       <TextField
@@ -48,7 +49,7 @@ export function ContactStep({ contact, errors, disabled, onChange }: ContactStep
         type="text"
         autoComplete="organization"
         placeholder="Acme Technologies Pvt. Ltd."
-        value={contact.company}
+        value={contact.company ?? ''}
         error={errors.company}
         disabled={disabled}
         onChange={(event) => onChange({ company: event.target.value })}
@@ -59,15 +60,15 @@ export function ContactStep({ contact, errors, disabled, onChange }: ContactStep
         required
         rows={5}
         placeholder="Describe what you want to build, who it is for, and any must-have requirements..."
-        value={contact.description}
-        error={errors.description}
+        value={desc}
+        error={errors.description ?? errors.projectDescription}
         hint={
-          errors.description
+          errors.description ?? errors.projectDescription
             ? undefined
             : `A few sentences is enough. ${remaining} characters remaining.`
         }
         disabled={disabled}
-        onChange={(event) => onChange({ description: event.target.value })}
+        onChange={(event) => onChange({ description: event.target.value, projectDescription: event.target.value })}
       />
 
       <p className="text-xs leading-relaxed text-slate-500">

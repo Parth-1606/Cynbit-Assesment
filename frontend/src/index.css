@@ -1,40 +1,40 @@
 /**
- * Global styles and design tokens.
- * Tailwind v4 uses CSS-first configuration via @theme instead of a
- * tailwind.config.js file.
+ * Cynbit Design System & Tokens
+ * Clean Scandinavian-meets-Enterprise aesthetic:
+ * Luminous light canvas, deep pine teal brand accents,
+ * soft neumorphic shadows, and rounded pill geometries.
  */
 @import 'tailwindcss';
 
 @theme {
-  /* Typography ------------------------------------------------------- */
+  /* Typography */
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Sora', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
-  /* Brand palette: dark navy base with blue/purple accents ------------ */
-  --color-navy-950: #05070f;
-  --color-navy-900: #060b1a;
-  --color-navy-850: #080f22;
-  --color-navy-800: #0b1428;
-  --color-navy-700: #121d38;
-  --color-navy-600: #1b2a4d;
-  --color-navy-500: #2a3d68;
+  /* Cynbit Pine Teal Brand Palette */
+  --color-cynbit-dark: #044e54;
+  --color-cynbit-primary: #064e52;
+  --color-cynbit-hover: #085f65;
+  --color-cynbit-teal: #0d6e75;
+  --color-cynbit-mint: #14b8a6;
+  --color-cynbit-cyan: #06b6d4;
 
-  --color-accent-blue: #3b82f6;
-  --color-accent-indigo: #6366f1;
-  --color-accent-purple: #8b5cf6;
-  --color-accent-cyan: #22d3ee;
+  /* Surfaces & Canvas */
+  --color-canvas: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f1f5f9;
+  --color-hairline: rgb(226 232 240 / 0.8);
 
-  /* Component-level tokens ------------------------------------------- */
-  --color-surface: #0b1428;
-  --color-surface-raised: #101b33;
-  --color-hairline: rgb(148 163 184 / 0.14);
+  /* Warm Tag Palette */
+  --color-warm-bg: #ffedd5;
+  --color-warm-text: #9a3412;
+  --color-warm-border: #fed7aa;
 
-  /* Animations -------------------------------------------------------- */
+  /* Animations */
   --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-fade-in: fade-in 0.35s ease-out both;
   --animate-scale-in: scale-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-shimmer: shimmer 2.4s linear infinite;
-  --animate-pulse-soft: pulse-soft 2.4s ease-in-out infinite;
+  --animate-pulse-subtle: pulse-subtle 3s ease-in-out infinite;
 
   @keyframes fade-up {
     from {
@@ -67,27 +67,19 @@
     }
   }
 
-  @keyframes shimmer {
-    from {
-      background-position: -200% 0;
-    }
-    to {
-      background-position: 200% 0;
-    }
-  }
-
-  @keyframes pulse-soft {
-    0%,
-    100% {
+  @keyframes pulse-subtle {
+    0%, 100% {
+      transform: scale(1);
       opacity: 1;
     }
     50% {
-      opacity: 0.55;
+      transform: scale(1.02);
+      opacity: 0.95;
     }
   }
 }
 
-/* Base ---------------------------------------------------------------- */
+/* Base */
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -95,99 +87,67 @@
   }
 
   body {
-    @apply bg-navy-950 font-sans text-slate-200 antialiased;
-    /* Subtle top-glow so the page reads as a premium dark theme. */
+    @apply bg-canvas font-sans text-slate-700 antialiased;
     background-image:
-      radial-gradient(900px 520px at 50% -10%, rgb(59 130 246 / 0.16), transparent 65%),
-      radial-gradient(700px 420px at 92% 8%, rgb(139 92 246 / 0.12), transparent 70%);
+      radial-gradient(1100px 650px at 50% -10%, rgb(13 148 136 / 0.05), transparent 70%),
+      radial-gradient(800px 500px at 95% 15%, rgb(6 78 82 / 0.04), transparent 60%);
     background-attachment: fixed;
+    min-height: 100vh;
   }
 
-  h1,
-  h2,
-  h3,
-  h4 {
-    @apply font-display text-white;
+  h1, h2, h3, h4 {
+    @apply font-display text-slate-900 font-extrabold tracking-tight;
     text-wrap: balance;
   }
 
-  /* Visible keyboard focus everywhere, without the mouse-focus ring. */
   :focus-visible {
-    outline: 2px solid var(--color-accent-blue);
+    outline: 2px solid #064e52;
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: 9999px;
   }
 
   ::selection {
-    background: rgb(99 102 241 / 0.4);
-    color: #fff;
-  }
-
-  /* Slim, theme-matched scrollbars. */
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(99 102 241 / 0.45) transparent;
+    background: rgb(6 78 82 / 0.2);
+    color: #044e54;
   }
 }
 
-/* Reusable component classes ------------------------------------------ */
+/* Reusable component classes */
 @layer components {
   .card {
-    @apply rounded-2xl border border-hairline bg-surface/80 backdrop-blur-sm;
+    @apply rounded-3xl border border-slate-200/80 bg-white shadow-[0_12px_40px_rgba(0,0,0,0.04)];
   }
 
-  /* Shared button base - Tailwind v4 cannot `@apply` a custom class,
-     so each variant repeats these base declarations. */
-  .btn,
-  .btn-primary,
-  .btn-secondary,
-  .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3
+  .card-teal {
+    @apply rounded-3xl bg-[#044e54] text-white shadow-[0_16px_50px_rgba(4,78,84,0.25)];
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
       text-sm font-semibold transition-all duration-200
       disabled:cursor-not-allowed disabled:opacity-50;
   }
 
-  .btn:focus-visible,
-  .btn-primary:focus-visible,
-  .btn-secondary:focus-visible,
-  .btn-ghost:focus-visible {
-    outline: 2px solid var(--color-accent-blue);
-    outline-offset: 2px;
-  }
-
   .btn-primary {
-    @apply bg-gradient-to-r from-accent-blue via-accent-indigo to-accent-purple
-      text-white shadow-[0_10px_30px_-12px_rgb(99_102_241_/_0.9)]
-      hover:-translate-y-0.5 hover:shadow-[0_18px_38px_-14px_rgb(139_92_246_/_0.9)]
-      active:translate-y-0;
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5
+      text-sm font-semibold text-white bg-[#044e54]
+      shadow-md shadow-[#044e54]/20 hover:bg-[#065f67] hover:shadow-lg hover:shadow-[#044e54]/30
+      hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200;
   }
 
   .btn-secondary {
-    @apply border border-hairline bg-white/5 text-slate-200
-      hover:border-white/25 hover:bg-white/10 hover:text-white;
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5
+      text-sm font-semibold text-slate-800 bg-slate-100/90 border border-slate-200/70
+      hover:bg-slate-200/80 hover:text-slate-900 transition-all duration-200;
   }
 
   .btn-ghost {
-    @apply text-slate-300 hover:bg-white/5 hover:text-white;
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5
+      text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all duration-200;
   }
 
-  /* Gradient hairline used as a section divider. */
-  .gradient-rule {
-    @apply h-px w-full bg-gradient-to-r from-transparent via-accent-indigo/50 to-transparent;
-  }
-}
-
-/* Accessibility: respect reduced-motion preferences. -------------------- */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .pill-warm {
+    @apply inline-flex items-center gap-2 rounded-full px-3.5 py-1 text-xs font-semibold
+      bg-warm-bg text-warm-text border border-warm-border tracking-wider uppercase;
   }
 }

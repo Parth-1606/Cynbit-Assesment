@@ -1,24 +1,125 @@
 /**
- * Shared TypeScript types for the Project Discovery Assistant.
+ * Shared TypeScript types for the Cynbit Smart Project Discovery & Cost Estimator.
  */
 import type { LucideIcon } from 'lucide-react';
 
+/* -------------------------------------------------------------------------- */
+/* NEW SPECIFICATION TYPES                                                    */
+/* -------------------------------------------------------------------------- */
+
+export const BUSINESS_OBJECTIVES = [
+  'Build a website',
+  'Develop a web application',
+  'Develop a mobile application',
+  'Automate business operations',
+  'Implement AI solutions',
+  'Improve cloud infrastructure',
+  'Improve digital marketing',
+] as const;
+
+export type BusinessObjective = (typeof BUSINESS_OBJECTIVES)[number];
+
+export const BUDGET_OPTIONS = [
+  'Below ₹25,00,000',
+  'Below ₹25,000',
+  '₹25,000–₹50,000',
+  '₹50,000–₹1,00,000',
+  '₹1,00,000–₹5,00,000',
+  'Above ₹5,00,000',
+  'Not decided',
+] as const;
+
+export type BudgetOption = (typeof BUDGET_OPTIONS)[number];
+
+export const TIMELINE_OPTIONS = [
+  '1–2 weeks',
+  'Within 1 month',
+  '1–3 months',
+  '3–6 months',
+  'Flexible',
+] as const;
+
+export type TimelineOption = (typeof TIMELINE_OPTIONS)[number];
+
+export interface DynamicRequirements {
+  // Website
+  pages?: '1–5 pages' | '5–15 pages' | '15+ pages';
+  authRequired?: 'Yes' | 'No' | boolean;
+  paymentIntegration?: 'Yes' | 'No' | boolean;
+  adminDashboard?: 'Yes' | 'No' | boolean;
+
+  // Web application
+  userRoles?: 'Single role' | 'Multi-role' | 'Complex RBAC';
+  dashboardRequirements?: 'Basic analytics' | 'Advanced interactive dashboards' | 'Custom reporting';
+  databaseRequirements?: 'Relational / SQL' | 'Document / NoSQL' | 'Scalability requirements';
+  thirdPartyIntegrations?: string[];
+
+  // Mobile application
+  platforms?: 'Android' | 'iOS' | 'Both platforms';
+  mobileAuth?: 'Yes' | 'No' | boolean;
+  mobilePayment?: 'Yes' | 'No' | boolean;
+
+  // AI automation
+  aiChatbot?: boolean;
+  workflowAutomation?: boolean;
+  documentProcessing?: boolean;
+  customAiIntegration?: boolean;
+
+  // Cloud infrastructure
+  cloudMigration?: boolean;
+  deployment?: boolean;
+  infrastructureOptimization?: boolean;
+  scalabilityRequirements?: boolean;
+
+  // Digital marketing
+  seo?: boolean;
+  socialMediaMarketing?: boolean;
+  paidAdvertising?: boolean;
+  contentMarketing?: boolean;
+
+  // Generic selected list for arbitrary representation
+  selectedItems?: string[];
+}
+
+export interface EstimationResult {
+  recommendedService: string;
+  whyRecommended: string;
+  projectComplexity: 'Low' | 'Moderate' | 'High' | 'Enterprise';
+  minBudget: number;
+  maxBudget: number;
+  estimatedBudget: string;
+  minWeeks: number;
+  maxWeeks: number;
+  estimatedDuration: string;
+  budgetConflictNote?: string;
+  recommendedNextSteps: string[];
+  summary: string;
+}
+
+export interface ApiResponse<T = unknown> {
+  success: boolean;
+  message?: string;
+  data?: T;
+  errors?: Array<{ field?: string; msg?: string; message?: string }>;
+}
+
+/* -------------------------------------------------------------------------- */
+/* QUESTIONNAIRE & LEGACY TYPES (Maintained for full backward compatibility)  */
+/* -------------------------------------------------------------------------- */
+
 /** A single selectable answer in the questionnaire. */
 export interface Option {
-  /** Stable machine value stored in state and sent to the API. */
   value: string;
   label: string;
-  /** Optional one-line hint shown under the label. */
   hint?: string;
   icon?: LucideIcon;
 }
 
 export type QuestionId = 'goal' | 'solution' | 'budget' | 'timeline';
 
-/** Definition of one questionnaire step (steps 1-4). */
+/** Definition of one questionnaire step. */
 export interface Question {
   id: QuestionId;
-  /** 1-based step number used by the progress indicator. */
   step: number;
   title: string;
   description: string;
@@ -28,13 +129,15 @@ export interface Question {
 
 /** Step 5 - contact details. */
 export interface ContactDetails {
-  name: string;
+  fullName?: string;
+  name?: string;
   email: string;
-  company: string;
-  description: string;
+  company?: string;
+  projectDescription?: string;
+  description?: string;
 }
 
-/** Complete questionnaire state, preserved while navigating between steps. */
+/** Complete questionnaire state. */
 export interface Answers {
   goal: string | null;
   solution: string | null;
@@ -46,7 +149,7 @@ export interface Answers {
 export type AnswerKey = Exclude<keyof Answers, 'contact'>;
 
 /** Field-level validation messages. */
-export type ValidationErrors = Partial<Record<keyof ContactDetails | AnswerKey, string>>;
+export type ValidationErrors = Partial<Record<keyof ContactDetails | AnswerKey | 'fullName' | 'projectDescription', string>>;
 
 export type SubmissionStatus = 'idle' | 'submitting' | 'saved' | 'saved-without-api' | 'failed';
 
@@ -68,29 +171,31 @@ export interface Service {
 }
 
 export interface RecommendationResult {
-  /** Best-matching service. */
   primary: Service;
-  /** Runner-up services worth discussing. */
   additional: Service[];
-  /** Human-readable reasons, one per contributing rule. */
   reasons: string[];
-  /** Ordered action plan for the customer. */
   nextSteps: string[];
-  /** 0-100, used only for transparent display of match strength. */
   matchScore: number;
 }
 
 /** Payload accepted by POST /api/projects. */
 export interface ProjectInquiryPayload {
-  name: string;
+  customerName?: string;
+  name?: string;
   email: string;
   company?: string;
-  goal: string;
-  solution: string;
+  businessObjective?: BusinessObjective | string;
+  goal?: string;
+  projectType?: string;
+  solution?: string;
+  selectedRequirements?: DynamicRequirements;
   budget: string;
   timeline: string;
-  description: string;
+  projectDescription?: string;
+  description?: string;
   recommendation: string;
+  estimatedBudget?: string;
+  estimatedDuration?: string;
 }
 
 export interface ProjectRecord extends ProjectInquiryPayload {

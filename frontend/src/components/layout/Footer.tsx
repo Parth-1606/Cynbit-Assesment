@@ -1,117 +1,107 @@
 /**
- * Site footer: branding, quick links and legal note.
+ * Cynbit Official Footer
+ * Clean light Scandinavian design with infinity logo,
+ * organized links, and muted copyright info.
  */
-import { ArrowRight, Mail, MapPin, Sparkles } from 'lucide-react';
-
-const LINK_GROUPS = [
-  {
-    title: 'Product',
-    links: [
-      { label: 'Discovery Assistant', href: '#assistant' },
-      { label: 'How it works', href: '#how-it-works' },
-      { label: 'Services', href: '#services' },
-    ],
-  },
-  {
-    title: 'Services',
-    links: [
-      { label: 'Full Stack Development', href: '#services' },
-      { label: 'AI Automation', href: '#services' },
-      { label: 'Cloud Solutions', href: '#services' },
-    ],
-  },
-];
+import { Link } from 'react-router-dom';
+import { ArrowRight, Mail, MapPin } from 'lucide-react';
 
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer id="contact" className="scroll-mt-24 border-t border-hairline bg-navy-900/60">
+    <footer id="contact" className="scroll-mt-24 border-t border-slate-200 bg-white">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand column */}
           <div className="lg:col-span-2">
-            {/* Brand — no aria-label, so the accessible name matches the
-                visible text and screen readers announce a consistent label. */}
-            <a href="#top" className="flex items-center gap-2.5">
-              <span
-                aria-hidden="true"
-                className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent-blue to-accent-purple font-display text-lg font-extrabold text-white"
-              >
-                C
-              </span>
-              <span className="flex flex-col leading-none">
-                <span className="font-display text-base font-extrabold text-white">Cynbit</span>
-                <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">
-                  Technologies
+            <Link to="/" className="inline-flex items-center gap-2.5">
+              <div className="flex items-center justify-center px-3.5 py-1 rounded-full border border-[#044e54]/30 bg-white shadow-xs">
+                <span className="font-serif text-sm font-black tracking-widest text-[#044e54]">
+                  (YN
                 </span>
-              </span>
-            </a>
+                <svg
+                  className="w-5 h-3 mx-1 text-[#044e54]"
+                  viewBox="0 0 24 12"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 2a4 4 0 0 1 0 8c-3 0-4-3-6-4-2-1-3-4-6-4a4 4 0 0 0 0 8c3 0 4-3 6-4 2 1 3 4 6 4a4 4 0 0 0 0-8z" />
+                </svg>
+                <span className="font-serif text-sm font-black tracking-widest text-[#044e54]">
+                  BIT)
+                </span>
+              </div>
+            </Link>
 
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-slate-400">
-              Cynbit builds production-grade web, mobile, AI and cloud solutions for businesses
-              that want software done properly. The Project Discovery Assistant helps you find the
-              right starting point.
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-slate-600">
+              Cynbit Technologies architects the digital future with autonomous AI agents, custom software development, and scalable business platforms. Based in Jaipur, Rajasthan, serving clients worldwide.
             </p>
 
-            <a href="#assistant" className="btn-primary mt-6 inline-flex">
-              <Sparkles className="size-4" aria-hidden="true" />
-              Start your project brief
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </a>
+            <div className="mt-6">
+              <Link to="/wizard" className="btn-primary text-xs font-bold">
+                <span>Start project discovery</span>
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </div>
           </div>
 
-          {/* Link groups */}
-          {LINK_GROUPS.map((group) => (
-            <nav key={group.title} aria-label={group.title}>
-              <h3 className="text-sm font-bold uppercase tracking-widest text-white">
-                {group.title}
-              </h3>
-              <ul className="mt-4 space-y-2.5">
-                {group.links.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-sm text-slate-400 transition-colors hover:text-accent-cyan"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ))}
+          {/* Product links */}
+          <nav aria-label="Product navigation">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-900">
+              Navigation
+            </h3>
+            <ul className="mt-4 space-y-2.5">
+              <li>
+                <Link to="/" className="text-sm text-slate-600 transition-colors hover:text-[#044e54]">
+                  Overview
+                </Link>
+              </li>
+              <li>
+                <Link to="/wizard" className="text-sm text-slate-600 transition-colors hover:text-[#044e54]">
+                  Discovery Wizard
+                </Link>
+              </li>
+              <li>
+                <Link to="/results" className="text-sm text-slate-600 transition-colors hover:text-[#044e54]">
+                  Estimates & Brief
+                </Link>
+              </li>
+            </ul>
+          </nav>
 
           {/* Contact column */}
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-widest text-white">Get in touch</h3>
-            <ul className="mt-4 space-y-3 text-sm text-slate-400">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-900">Get in touch</h3>
+            <ul className="mt-4 space-y-3 text-sm text-slate-600">
               <li className="flex items-start gap-2.5">
-                <Mail className="mt-0.5 size-4 shrink-0 text-accent-purple" aria-hidden="true" />
+                <Mail className="mt-0.5 size-4 shrink-0 text-[#044e54]" aria-hidden="true" />
                 <a
-                  href="mailto:hello@cynbit.com"
-                  className="transition-colors hover:text-accent-cyan"
+                  href="mailto:contact@cynbit.com"
+                  className="transition-colors hover:text-[#044e54]"
                 >
-                  hello@cynbit.com
+                  contact@cynbit.com
                 </a>
               </li>
               <li className="flex items-start gap-2.5">
-                <MapPin className="mt-0.5 size-4 shrink-0 text-accent-purple" aria-hidden="true" />
-                <span>India - working with clients worldwide</span>
+                <MapPin className="mt-0.5 size-4 shrink-0 text-[#044e54]" aria-hidden="true" />
+                <span>Jaipur, Rajasthan — India</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="gradient-rule my-10" />
-
-        <div className="flex flex-col items-center justify-between gap-3 text-xs text-slate-500 sm:flex-row">
-          <p>
-            © {year} Cynbit Technologies. All rights reserved.
-          </p>
-          <p>
-            Recommendations generated by transparent rule-based logic - not AI.
-          </p>
+        {/* Bottom bar */}
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-100 pt-8 text-xs text-slate-500 sm:flex-row">
+          <p>© {year} Cynbit Technologies. Prototype & Assessment Deliverable.</p>
+          <div className="flex items-center gap-4 text-slate-400">
+            <span>Deterministic Estimation Engine</span>
+            <span>•</span>
+            <span>INR Currency Modeling</span>
+          </div>
         </div>
       </div>
     </footer>
